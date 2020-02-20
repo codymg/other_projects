@@ -178,7 +178,7 @@ As per the design specified above, we will be using a difference in means estima
 ```{r}
 
 
-df <- read_csv(url('~/egypt_data.csv'))
+df <- read_csv(url('https://github.com/codymg/other_projects/raw/master/data/egypt_data.csv'))
 
 attach(df)
 
