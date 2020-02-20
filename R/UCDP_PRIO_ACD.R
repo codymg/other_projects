@@ -1,9 +1,7 @@
 library(tidyverse)
 library(dplyr)
 
-load("~/ucdp-prio-acd-181.Rdata")
-
-df <- acd
+df <- load(url("https://github.com/codymg/other_projects/blob/master/data/ucdp-prio-acd-181.Rdata?raw=true")
 
 glimpse(df)
 
@@ -24,9 +22,7 @@ dat <- df %>%
                         "3" = "Civil Conflicts", 
                         "4" = "Civil Conflicts with Foreign State Intervention")) %>%
         select(., conflict_type, 2:73)
-
-write.csv(dat, file = "C:/Users/HP User/Documents/RA Work/Johns/UCDP_PRIO_Conflict_Type_Data.csv")
-
+           
 plot_dat <- df %>%
   select(type_of_conflict, year) %>%
   group_by(type_of_conflict, year) %>%
