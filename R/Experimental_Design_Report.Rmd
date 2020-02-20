@@ -1,0 +1,476 @@
+---
+title: "Experimental Design Report"
+author: "Cody Giddings"
+date: "March 20, 2018"
+output: pdf_document
+---
+\section{Introduction}
+
+Ultimately this research seeks to explain the vastly different rates of conflict we observe between some regions of the world as opposed to others. Many international scholars have centered their explanations for this variation on differences in material factors, like regional distributions of military power, regime type, or the presence of valuable natural resources. Where this paper differs from traditional approaches to explaining the puzzle of why conflict is more prominent in some areas and not others is in its attempt to examine the highly understudied culturally based mechanisms that may drive rates of conflict. In this paper, we initially examined how conflict and cooperation was viewed differently in four societies: Egypt, Israel, Turkey and the United States.
+
+The results provide highly suggestive evidence that valuing 50/50 outcomes or negotiating for larger shares of a disputed good is primarily culturally dependent. Respondents in Egypt and Turkey strongly valued ever-increasing divisions of disputed goods; their preferences are monotonically increasing. U.S. respondents strongly preferred a 50/50 division of resources, however, and Israeli respondents preferred either the 50/50 division or an ever increasing share, depending on the relative power of the Israeli military. Israeli respondents were impacted by shifting power in precisely the way that other respondents were; their preference orderings shift while others do not because their baseline preference for 50/50 divisions versus 100% shares is closer to indifference.
+
+Overall, the findings claim to reveal the importance of cultural spaces as determinants of foreign policy preferences. While more traditional determinants of foreign policy interests, such as the balance of power and the location of the status quo, influence all respondents similarly, the magnitudes of the shifts in preferences resulting from cultural difference are much greater. Respondents in Turkey and Egypt would be willing to fight wars that respondents in the United States, and to a lesser extent in Israel, would not be willing to fight. Thus, the heightened propensities of some states, regions and dyads to engage in conflicts may be largely explained by cultural difference.
+
+Presented below is a decleration of design to assess whether or not the main findings which suggest that cultural differences may play a crucial role in crisis bargaining situtations, remain intact when we expose respondents to real-world treatments as opposed to just an unnamed adversary. 
+
+\subsection{Theory}
+
+Based on various inputs and sugesstions recieved at APSA, the external validity of this paper's findings may not be very strong. It is highly likely respondents had particular adversaries in mind when they completed the initial survey experiment this paper presents. Thus it could be that what is observed is simply an artifact of respondents pre-conceptions about the global distributions of power or their respective ideas about their nation's historical adversaries. Should it be the case that these findings stand up to the inclusion of actual nations, then there is a much stronger argument to be made that the original findings are due mostly to cultural differences as opposed to some other very likely confounders that we could be observing. It is my opinion that the external validity of these findings is indeed questionable and that other factors hypothesiszed in international affairs and crisis bargaining in particular better explain the initial results. However due to the fact that determining a mechanism through which these initial results could be explained would require extensive inquiry on top of an already extensive data collection process, this replication seeks to test only the following hypothesis regarding the original experiment's external validity:
+
+$H_{1}:$ \textit{There will be a statistically significant difference to respondents preferences regarding divisions of territory in a bargaining crisis with an unamed adversary as opposed to named ones.}
+
+Ultimately this hypothesis simply constitutes a sharp null test where all that must be done to assess the hypothesis' validity is to show a significant differnce between the baseline results (unamed adversary) and the treatment effect (named adversaries). Should we find evidence for that supports this hypothesis than we will be able to confidently say that attributing these initial results to purely cultural differences may be a misguided approach.
+
+\section{Design}
+
+\subsection{Units, Treatment, and Sampling Procedure}
+
+In order to test this hypothesis a supplemntary survey experiment will need to be conducted. The decision was made to conduct the survey over the internet with Egyptian university students as respondents (a mix of students from the American University in Cairo and Cairo University). Egypt was chosen as a most-likely case to find evidence of potential alternative explanations due to its unique history regarding conflicts and somewhat diverse culutral attitudes. The survey experiment itself has four conditions in which the opponent (against Egypt) in a resource dispute is being randomized. The baseline measure or control condition that was used was Libya, which had a non-powerful and similar cultural make-up (based on world values survey data) to Egypt. The other three adversaries or conditions, which varied on these measures, were Turkey, Greece, and Israel. These conditions were selected to also help guide potential alternative explanations for the initial findings should the hypothesis tested here prove to have some statistical support. 
+
+Ultimately the design consists of sampling (non-randomly/fielding to select faculty members classes) of the population of Egyptian university students. There are of course problems with this procedure and demographic but in Egypt it is often this block that is highly active and vocal in domestic politics as well as Egyptian foreign affairs which makes them an interesting population to study. Further, due to resource constraints this replication should be treated as more of a preliminary probe to assess the robustness of intial findings as well as avenues for further study. Ultimately the sample consists of 123 university students from Egypt. Pre-treatment covariates such as income, age, sex, and religion were also collected to help aid in determining other potential alternative explanations. 
+
+\subsection{Assignment and Outcome Measures}
+
+The treatment is quite simple in nature and it is assigned via complete random assignment. The 123 respondents are placed in to one of the 4 treatment conditions each with an equal probability of assignment. Given that there is only 1 survey and that respondents cannot start the survey and not finish it (or at least this did not happen in any case we observed) issues of non-compliance or attrition are unlikely to arise. Thus the design process becomes relatively straight forward. The outcomes of interest will be the approval ratings on a 1-10 scale of certain percentage divisions of a territory Egypt and the condition country are in a dispute with. The estimands in this replication experiment are simply the ATE for each condition compared to the baseline condition. The estimators of choice are thus the difference-in-means estimator for each condition compared to the baseline condition. 
+
+\section{Design Assessment}
+
+Based on previous work and a small amount of literature, there appears to be a relationship between bargaining preferences in crisis situations and some pre-treatment covariates such as age and income. It is unclear what this relationship is between crisis bargaining preferences and specific national adversaries but for the sake of this design we will assume that this relationship remains unchanged from the intial findings which had an effect close to 2-3 points on the 10 point preference scale. Using an simplistic multi-arm condition difference-in-means design this experiment hopes to obtain an average treatment effect on the crisis bargaining preferences of Egyptian university students in a dispute with an unknown adversary as opposed to a known adversary. Presented below is a declaration of this design and an analysis of its power and bias: 
+
+```{r warning = FALSE, echo = FALSE, message = FALSE}
+library(randomizr)
+library(ri)
+library(DeclareDesign)
+library(tidyverse)
+library(sandwich)
+library(dplyr)
+library(broom)
+library(foreign)
+library(ggplot2)
+library(broom)
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(wesanderson)
+library(corrplot)
+library(reshape2)
+library(gridExtra)
+library(sandwich)
+```
+
+```{r}
+#Declare Design
+
+#Model
+
+set.seed(123)
+
+my_population <- declare_population(N = 10000, 
+                                    Sex = sample(0:1, N, replace = TRUE), 
+                                    Age = sample(18:35, N, replace = TRUE), 
+                                    Religion = sample(0:1, N, replace = TRUE), 
+                                    Income = sample(10000:300000, N, replace = TRUE), 
+                                    Rural = sample(0:1, N, replace = TRUE), 
+                                    Noise = sample(0:2, N, replace = TRUE))
+
+pop <- my_population()
+head(pop)
+
+```
+
+```{r}
+#Potential Outcomes
+
+my_potential_outcomes <- declare_potential_outcomes(Y_Z_T1 = 3 + Noise, 
+                                                    Y_Z_T2 = Y_Z_T1 + 0.002 * Age * 0.00004 * Income,
+                                                    Y_Z_T3 = Y_Z_T1 + 0.002 * Age * 0.00004 * Income, 
+                                                    Y_Z_T4 = Y_Z_T1 * 0.002 * Age * 0.00004 * Income)
+
+pop_pos <- my_potential_outcomes(pop)
+head(pop_pos)
+
+```
+
+```{r}
+#Sampling
+
+my_sampling <- declare_sampling(n = 123)
+df <- my_sampling(pop_pos)
+
+dim(df)
+
+#Assignment
+
+my_assignment <- declare_assignment(num_arms = 4)
+
+smp <- my_assignment(df)
+head(smp)
+
+```
+
+```{r}
+#Estimands
+
+my_estimand_libya <- declare_estimand(ATE_L = mean(Y_Z_T2 - Y_Z_T1), label = "ATE_L")
+
+my_estimand_turkey <- declare_estimand(ATE_T = mean(Y_Z_T3 - Y_Z_T1), label = "ATE_T")
+
+my_estimand_greece <- declare_estimand(ATE_G = mean(Y_Z_T4 - Y_Z_T1), label = "ATE_G")
+
+smp <- reveal_outcomes(smp)
+head(smp)
+
+```
+
+```{r}
+#Estimator DIM
+
+my_estimator_dim_libya <- declare_estimator(Y ~ Z, estimand = my_estimand_libya, condition2 = "T2", condition1 = "T1", label = "Est_Libya", coefficient_name = "ZT2")
+
+my_estimator_dim_turkey <- declare_estimator(Y ~ Z, estimand = my_estimand_turkey, condition2 = "T3", condition1 = "T1", label ="Est_Turkey", coefficient_name = "ZT3")
+
+my_estimator_dim_greece <- declare_estimator(Y ~ Z, estimand = my_estimand_greece, condition2 = "T4", condition1 = "T1", label ="Est_Greece", coefficient_name = "ZT4")
+
+```
+
+```{r warning = FALSE, message = FALSE}
+#Full Design DIM
+
+designdim <- declare_design(my_population, 
+                            my_sampling, 
+                            my_potential_outcomes,
+                            my_assignment,
+                            reveal_outcomes,
+                            my_estimand_libya, 
+                            my_estimand_turkey,
+                            my_estimand_greece,
+                            my_estimator_dim_libya,
+                            my_estimator_dim_turkey,
+                            my_estimator_dim_greece)
+
+diagnosis <- diagnose_design(designdim)
+
+#Model Data and Estimates
+
+Results <- get_diagnosands(diagnosis = diagnosis)
+
+Results
+
+```
+
+\subsection{Design Diagnosis}
+
+As can be observed by the declaration of the replication design above as well as the ensuing diagnosis of said design, it is clear that the design is good but not optimal. Based on the bias of the diagnostic tests we can see that any effect this design reports will be quite close in relation to the true effect. However it appears that the deisgn has some issues with low power and should allow the design to correctly observe a statistically significant result only 32.8\% -- 34\% of the time for some treatment conditions. It is unclear why the power is so high for the first condition but overall it appears our small sample is indeed problematic. Potential avenues to imporve the design could come from obtaining a much larger sample size. Due to resource constraints pursuing this change would be difficult but may certainly help. In addition to this it may also be helpful to block on certain pretreatment covariates such as age or income which, according to previous research, are somewhat predictive of crisis bargaining preferences (outcome of interest), but again our small sample size makes such an approach problematic.. One last option may be to reduce the number of conditions which could provide us with more statistical power given the small sample size relative to the size of the population. Ultimately resource constraints and field constraints limit pursuit of the first two potential design improvements but reducing the number of conditions is possible. However, given we hope to use the results observed from these conditions to assess the merit of other potential explanations for the initial findings, the lower statistical power of the design is well worth the many treatment conditions.
+
+\section{Analysis Report}
+
+Now that we have assessed the power and bias of our experimental design we will report a preliminary probe that uses the design that we hope to scale-up in the future to assess the external validity of our initial findings and also examine avenues for further research. Below we outline the data collection process for the probe, the preliminary findings from the analytical design which was declared above, a general discussion about the results, and a concluding section regarding design flaws and areas for improvement.
+
+\subsection{Data Collection}
+
+Data for this probe consisted of a 3-month fielding period at two Egyptian universities: The American University in Cairo and Cairo University. Using qualtrics, a online survey experiment with 3 treatment conditions and complete random assignment was used to collect responses on crisis bargaining preferences from 126Egyptian university students. Although this is a hardly representative sample (numerous demographic charactersitics were also collected) it will still allow us to observe that conditional on being a egyptian university student, to preferences remain the same regardless of treatment status (in this case the adversary state) as is the assumption in the initial study. After obtaining IRB approval the survey link was provided to students and there appears to be no issues of non-compliance or attrition. This is unsurprising given that we controled treatment assignment non-compliance was not likely to be an issue and the fact that the survey was relatively short and only a one-time occurance attrition was also improbable. There is a possibilty of spillover in the sense that students may communicate with other students about what treatment's they recieved and if this occured before one students completion of the survey it is possible it might change their potential outcomes, threating the internal validity of our randomized design. However the fact that this is just a preliminary probe and that almost all the survey responses were completed within the same day (less time for spillover) means that this issue, although concerning for scaling purposes, is not a major problem at for this stage of the research process.
+
+\subsection{Probe Analysis}
+
+As per the design specified above, we will be using a difference in means estimation approach to determine if there is any significant effect of the treatment (adversary state) on the outcome (crisis bargaining preferences on a 10 point scale with 1 indicating low approval and 10 high approval). Presented below is the necessary code and the preliminary results of the analysis:
+
+```{r}
+
+
+df <- read_csv(url('~/egypt_data.csv'))
+
+attach(df)
+
+
+#Adversary Plot Data
+
+#Israel
+
+se <- function(x) sqrt(diag(var(x))/length(x))
+
+Israel <- data.frame(df$Q14_1, df$Q14_2, df$Q14_3, df$Q14_4, df$Q14_5, df$Q14_6, df$Q14_7)
+
+Israel <- na.omit(Israel)
+
+seI <- se(Israel)
+
+AVG.Israel <- colMeans(Israel)
+
+#Libya
+
+Libya <- data.frame(df$Q16_1, df$Q16_2, df$Q16_3, df$Q16_4, df$Q16_8, df$Q16_6, df$Q16_7)
+
+Libya <- na.omit(Libya)
+
+seL <- se(Libya)
+
+AVG.Libya <- colMeans(Libya)
+
+#Greece
+
+Greece <- data.frame(df$Q18_1, df$Q18_8, df$Q18_9, df$Q18_4, df$Q18_5, df$Q18_6, df$Q18_7)
+
+Greece <- na.omit(Greece)
+
+seG <- se(Greece)
+
+AVG.Greece <- colMeans(Greece)
+
+#Turkey
+
+Turkey <- data.frame(df$Q88_1, df$Q88_2, df$Q88_3, df$Q88_4, df$Q88_5, df$Q88_6, df$Q88_7)
+
+Turkey <- na.omit(Turkey)
+
+seT <- se(Turkey)
+
+AVG.Turkey <- colMeans(Turkey)
+
+#Calculating DIM
+
+split <- c("0%", "30%", "40%", "50%", "60%", "70%", "100%")
+
+x <- c(0,30,40,50,60,70,100)
+datafp <- data.frame(x = rep(x,4),
+                     y = c(AVG.Israel, AVG.Libya, AVG.Greece, AVG.Turkey),
+                     se = c(seI, seL, seG, seT),
+                     max = c(seI + AVG.Israel, seL + AVG.Libya, seG + AVG.Greece, seT + AVG.Turkey),
+                     min = c(AVG.Israel - seI, AVG.Libya - seL, AVG.Greece - seG, AVG.Turkey - seT),
+                     Country = c(rep('Israel',7), rep('Libya',7), rep('Greece',7), rep('Turkey',7)))
+
+attach(datafp)
+
+dat <- datafp
+
+dat <- dat %>% mutate(Treat = c(rep(1,7), rep(0,7), rep(2,7), rep(3,7)))
+
+attach(dat)
+
+datI <- dat %>% filter(Treat == 1 | Treat == 0)
+  
+datT <- dat %>% filter(Treat == 3 | Treat == 0)
+  
+datG <- dat %>% filter(Treat == 2 | Treat == 0)
+
+modelI <- lm(data = datI, y ~ Treat)
+
+modelT <- lm(data = datT, y ~ Treat)
+
+modelG <- lm(data = datG, y ~ Treat)
+
+```
+
+\begin{table}
+\centering
+\caption{DIM Estimates by Adversary}
+\label{Table 1}
+\begin{tabular}{lllllllll}
+Israel Est. & SE & P-Val & Greece Est. & SE & P-Val & Turkey Est. & SE & P-Val \\
+-0.2078 & 0.8725 & 0.816 & -0.09791 & 0.43249 & 0.825 & 0.05855 & 0.27507 & 0.835 \\
+\end{tabular}
+\end{table}
+
+
+As can be seen above none of the results appear to hold statistical significance or are even close to meeting conventional levels of statistical significance. However given the weak power in the design which was shown earlier this lack of significance is unsurprising. The signs of the estimates do appear to be interesting though and do give slightly suggestive evidence of certain selection criteria that influence crisis bargaining preferences. In particular the negative estimates given to the Greece (a militarily weak western state) and Israel (a militaily strong western/western allied state) treatment suggests that contrary to traditional realist theories the distribution of the balance of power may not be all that matters in determining conflict preferences.  While these estimates are aggregated across all divisions of territory it may be useful to be break down the estimates by territorial split. 
+
+```{r}
+
+#DIM By Split
+
+DIMIsrael <- dat$y[Treat == 1] - dat$y[Treat == 0]
+DIMTurkey <- dat$y[Treat == 3] - dat$y[Treat == 0]
+DIMGreece <- dat$y[Treat == 2] - dat$y[Treat == 0]
+
+DIM <- cbind(DIMIsrael, DIMGreece, DIMTurkey)
+
+```
+
+\begin{table}[]
+\centering
+\caption{DIM Estimates by Split}
+\label{Table 2}
+\begin{tabular}{llll}
+Split & Israel DIM Est. & Greece DIM Est. & Turkey DIM Est. \\
+0 & 0.4474074 & 0.23230769 & 0.43130435 \\
+30 & -0.1614815 & 0.24307692 & 0.36347826 \\
+40 & -0.6740741 & -0.36923077 & -0.03478261 \\
+50 & -3.1170370 & -0.15692308 & -1.60173913 \\
+60 & -0.6755556 & -1.12000000 & 0.01043478 \\
+70 & 0.4162963 & -0.18769231 & 0.81565217 \\
+100 & 2.3096296 & -0.01230769 & 1.24521739
+\end{tabular}
+\end{table}
+
+As shown in the table above there appears to be some strange point estimates around the 50\% mark in all the treatment groups. This is consistent with the initial findings of the orignial paper in which respondents from the Egypt and Turkey tended to prefer ever increasing shares of divisions of the territory as opposed to other shares closer to a 50/50 split. However this appears to not be the case with Greece, there does not appear to be this ever increasing desire more larger shares of territory. This is quite inconsistent with the initial findings which had initially made it seem as if Egyptian preferences across all states had this characteristic of being ever-increasing. This can seen more clearly when we plot these figures shown below:
+
+```{r}
+#Plot
+
+tp <- ggplot(datafp, aes(x, y, color = Country)) +
+  geom_line() +
+  theme_bw() +
+  labs(x = 'Split of Territory for Egypt', y = 'Average Approval Rating of Settlement', title = 'Average Egyptian Approval of Territorial Dispute Settlement by Adversary') +
+  scale_x_discrete(limit = c(0,30,40,50,60,70,100), labels = split)
+
+tp
+
+```
+
+\subsection{Discussion}
+
+The results of the experiment while not statistically significant do show some very interesting results that may deem future and imporved research worthy of pursuit. What is the mechanism that drives such results? It is clear that military or economic power is not the only potential explanation of the findings given that Egyptians were more approving of conceding to militarily weaker states like Greece and Libya. Turkey seems to be a unique case given the results, and this may stem from Egypt's long history with Turkey (and previously the Ottoman Empire). It may possibly be that crisis bargaining preferences are greatly shaped by previous conflict and the desire to either punish adversaries for previous defeats or to shape future beahavior. Such theories would seem to support the results above but it is unclear what the mechanisms to explain these preferences would be. Using data that was also obtained on crisis bargaining preferences in the event of the dispute regarding the territory boiling over in to violent conflict we may be able to rule out some of these preliminary theoretical explanations.  
+
+```{r}
+#Additional Plot (Victory)
+
+#Victory and Failure Plots
+
+#Israel
+
+IsraelV <- data.frame(df$Q31_1)
+
+IsraelV <- na.omit(IsraelV)
+
+seIV <- se(IsraelV)
+
+MIsraelV <- mean(IsraelV[,1])
+
+IsraelL <- data.frame(df$Q23_1)
+
+IsraelL <- na.omit(IsraelL)
+
+IsraelL <- IsraelL[-14,1]
+
+IsraelL <- as.data.frame(IsraelL)
+
+seIL <- se(IsraelL)
+
+MIsraelL <- mean(IsraelL[,1])
+
+datafip <- datafp[-(8:28),]
+
+tip <- ggplot(data = datafip) +
+  geom_line(aes(x, y), color = 'green') +
+  geom_ribbon(data = datafip, aes(x = x, ymax = max, ymin = min, color = Country), linetype = '1F', alpha=0.1, color = 'green') +
+  theme_bw() +
+  geom_hline(aes(yintercept = 2.923077), color = 'green') +
+  geom_text(aes(8,2.9,label = 'Loss', vjust = -1)) +
+  geom_hline(aes(yintercept = 6.307692), color = 'green') +
+  geom_text(aes(8,6.31,label = 'Victory', vjust = -1)) +
+  labs(x = 'Split of Territory for Egypt', y = 'Average Approval Rating', title = 'Egyptian Approval V. Israel') +
+  scale_x_discrete(limit = c(0,30,40,50,60,70,100), labels = split)
+
+#Victory and Failure Plots
+
+#Libya
+
+LibyaV <- data.frame(df$Q29_1)
+
+LibyaV <- na.omit(LibyaV)
+
+seLV <- se(LibyaV)
+
+MLibyaV <- mean(LibyaV[,1])
+
+LibyaL <- data.frame(df$Q26_1)
+
+LibyaL <- na.omit(LibyaL)
+
+LibyaL <- as.data.frame(LibyaL)
+
+seLL <- se(LibyaL)
+
+MLibyaL <- mean(LibyaL[,1])
+
+dataflp <- datafp[(8:14),]
+
+tlp <- ggplot(data = dataflp) +
+  geom_line(aes(x, y), color = 'blue') +
+  geom_ribbon(data = dataflp, aes(x = x, ymax = max, ymin = min, color = Country), linetype = '1F', alpha=0.1, color = 'blue') +
+  theme_bw() +
+  geom_hline(aes(yintercept = 3.714286), color = 'blue') +
+  geom_text(aes(8,3.3,label = 'Loss', vjust = -1)) +
+  geom_hline(aes(yintercept = 4.692308), color = 'blue') +
+  geom_text(aes(8,4.4,label = 'Victory', vjust = -1)) +
+  labs(x = 'Split of Territory for Egypt', y = 'Average Approval Rating', title = 'Egyptian Approval V. Libya') +
+  scale_x_discrete(limit = c(0,30,40,50,60,70,100), labels = split)
+
+#Victory and Failure Plots
+
+#Greece
+
+GreeceV <- data.frame(df$Q35_1)
+
+GreeceV <- na.omit(GreeceV)
+
+seGV <- se(GreeceV)
+
+MGreeceV <- mean(GreeceV[,1])
+
+GreeceL <- data.frame(df$Q33_1)
+
+GreeceL <- na.omit(GreeceL)
+
+GreeceL <- as.data.frame(GreeceL)
+
+seGL <- se(GreeceL)
+
+MGreeceL <- mean(GreeceL[,1])
+
+datafgp <- datafp[(15:21),]
+
+tgp <- ggplot(data = datafgp) +
+  geom_line(aes(x, y), color = 'red') +
+  geom_ribbon(data = datafgp, aes(x = x, ymax = max, ymin = min, color = Country), linetype = '1F', alpha=0.1, color = 'red') +
+  theme_bw() +
+  geom_hline(aes(yintercept = 3.8125), color = 'red') +
+  geom_text(aes(8,3.5,label = 'Loss', vjust = -1)) +
+  geom_hline(aes(yintercept = 5.071429), color = 'red') +
+  geom_text(aes(8,5.06,label = 'Victory', vjust = -1)) +
+  labs(x = 'Split of Territory for Egypt', y = 'Average Approval Rating', title = 'Egyptian Approval V. Greece') +
+  scale_x_discrete(limit = c(0,30,40,50,60,70,100), labels = split)
+
+#Victory and Failure Plots
+
+#Turkey
+
+TurkeyV <- data.frame(df$Q94_1)
+
+TurkeyV <- na.omit(TurkeyV)
+
+seTV <- se(TurkeyV)
+
+MTurkeyV <- mean(TurkeyV[,1])
+
+TurkeyL <- data.frame(df$Q90_1)
+
+TurkeyL <- na.omit(TurkeyL)
+
+TurkeyL <- as.data.frame(TurkeyL)
+
+seTL <- se(TurkeyL)
+
+MTurkeyL <- mean(TurkeyL[,1])
+
+dataftp <- datafp[(22:28),]
+
+ttp <- ggplot(data = dataftp) +
+  geom_line(aes(x, y), color = 'purple') +
+  geom_ribbon(data = dataftp, aes(x = x, ymax = max, ymin = min, color = Country), linetype = '1F', alpha=0.1, color = 'purple') +
+  theme_bw() +
+  geom_hline(aes(yintercept = 2.75), color = 'purple') +
+  geom_text(aes(8,2.8,label = 'Loss', vjust = -1)) +
+  geom_hline(aes(yintercept = 4.454545), color = 'purple') +
+  geom_text(aes(8,4.5,label = 'Victory', vjust = -1)) +
+  labs(x = 'Split of Territory for Egypt', y = 'Average Approval Rating', title = 'Egyptian Approval V. Turkey') +
+  scale_x_discrete(limit = c(0,30,40,50,60,70,100), labels = split)
+
+grid.arrange(tip,tlp,tgp,ttp, nrow=2, ncol=2)
+```
+
+As expected the mean approval of the splits of territory after conflict against Turkey and Israel are quite dissimilar from that of Greece and Libya. It appears respondents were more aggressive in their crisis bargaining preferences. This would suggest that past conflict certainly makes a difference in determining preferences. Although our small sample size makes these observations only suggestive in nature, it does appear prima facie to be quite a significant difference that could potentially carry over in a scaled-up fielding of this survey. 
+
+\subsection{Conclusion}
+
+Overall this replication effort showed that assuming crisis bargaining preferences are independent of adversary type is incorrect. It is unclear what the underlying mechanism that explains the results from the probe is but there are a few potential theories that may be worth pursuit. What is certain is that either a reduction in the number of treatment arms or a vast increase in the size of the sample is required to improve the design of the probe. An improved design would certainly give us a better picture of what is actually going on with regard to shaping crisis bargaining preferences among Egyptian university students. 
